@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/aquasense.ino.hex'
+elf = 'build/aquasense.ino.elf'

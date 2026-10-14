@@ -1,0 +1,90 @@
+# =============================================================================
+# AquaSense — root .gitignore
+# Stack: Laravel/PHP backend, React+TypeScript+Vite frontend, SQLite (dev),
+#        ESP32/Arduino + Wokwi firmware/simulation.
+# NOTE: this repo contains MANY legitimate .json/.yaml/.yml/.cpp/.h/.ino files
+#       (composer/package manifests, Wokwi diagram.json, wokwi.toml, firmware,
+#       CI workflows). Those are NOT ignored here — only generated/runtime files.
+# =============================================================================
+
+# --- Secrets / environment (never commit real credentials) -------------------
+# .env.example IS tracked; local .env and variants are ignored.
+.env
+.env.*
+!.env.example
+**/.env
+!**/.env.example
+*.pem
+*.key
+
+# --- Backend: Laravel / PHP ---------------------------------------------------
+backend/vendor/
+backend/node_modules/
+backend/public/build/
+backend/public/hot
+backend/public/storage
+backend/storage/*.key
+backend/storage/app/public/**
+backend/storage/framework/cache/**
+backend/storage/framework/sessions/**
+backend/storage/framework/views/**
+backend/storage/logs/**
+backend/bootstrap/cache/**
+backend/.phpunit.result.cache
+backend/.phpunit.cache
+backend/Homestead.json
+backend/Homestead.yaml
+backend/_ide_helper*.php
+
+# --- Database: SQLite local development --------------------------------------
+# Track schema via migrations/seeders, NOT the runtime DB file.
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.db
+
+# --- Frontend: React / TypeScript / Vite / npm -------------------------------
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+*.tsbuildinfo
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Firmware / Arduino / Wokwi build outputs --------------------------------
+# Source (.ino/.cpp/.h), diagram.json and wokwi.toml are tracked; build dirs
+# and compiled artifacts are ignored.
+firmware/**/build/
+simulation/**/build/
+simulation/wokwi/build/
+*.elf
+*.hex
+*.bin
+*.map
+
+# --- Backups / archives / large generated bundles ----------------------------
+# e.g. the preserved upstream history bundle lives OUTSIDE the repo, but ignore
+# any accidental archive inside it too.
+*.bundle
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+
+# --- IDE / editor / OS artifacts ---------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Playwright / test browser debug output ----------------------------------
+.playwright-mcp/
+test-results/
+playwright-report/
