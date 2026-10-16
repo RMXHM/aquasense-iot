@@ -1,111 +1,99 @@
-# 💧 AquaSense
+# AquaSense
 
-**Affordable, open-source water tank monitoring with ESP32, a web dashboard, and a lightweight backend.**
+**Smart Water Monitoring | ESP32-S3 · Laravel · React · TypeScript**
 
-AquaSense is a water-monitoring project designed to help users understand how much water remains in a storage tank, track changes over time, and identify potentially abnormal water-level changes.
+AquaSense is an open-source water-monitoring platform designed to make tank-level information easier to measure, visualize, and understand. It combines a web dashboard, a backend API, and a telemetry simulator, with the goal of supporting affordable water monitoring through IoT hardware.
 
-The project combines an IoT-oriented backend, a browser-based dashboard, and a software simulator. The software can currently be run locally without physical sensor hardware.
+The platform is being developed to help users monitor water availability, track level changes, and identify potentially abnormal conditions through a centralized interface.
 
-> **Development status:** AquaSense is a working software prototype, not yet a validated hardware product. Current readings come from simulation. Physical sensor accuracy, device-to-server Wi-Fi communication, and production deployment still require validation.
+> **Project status:** Software prototype. The backend, dashboard, and software simulation are available for local development. Physical sensor accuracy, real-device connectivity, and production deployment have not yet been validated.
 
-## Overview
+## Features
 
-Water storage can be difficult to monitor when measurements are taken manually or when changes go unnoticed between inspections. AquaSense explores a low-cost way to make water-level information easier to access and understand.
+- **Water-level monitoring:** Calculate estimated water height, remaining capacity, and volume from distance measurements.
+- **Tank visualization:** View tank information and historical measurements through a web dashboard.
+- **Monitoring conditions:** Evaluate low-water conditions, sudden level changes, and potential overflow risks.
+- **Measurement history:** Store readings for inspection and visualization.
+- **Device status:** Represent recent telemetry, missing readings, and sensor error conditions.
+- **Software simulation:** Generate test measurements without requiring physical sensor hardware.
+- **IoT-ready architecture:** Develop and validate the software independently while preparing for ESP32-S3 integration.
 
-The system is designed to:
+Features that depend on physical hardware remain subject to further testing.
 
-- Monitor water levels and estimated remaining capacity.
-- Visualize measurements and changes over time.
-- Identify low-water conditions and unusual level changes.
-- Track whether measurements are recent or a device appears offline.
-- Provide a foundation for future ESP32-based monitoring hardware.
+## Architecture
 
-The long-term goal is to make water monitoring more accessible for household tanks and other suitable storage installations.
-
-## Current capabilities
-
-The current local prototype includes the following components and functionality.
-
-| Component | Current implementation |
-|---|---|
-| Backend API | Laravel and PHP |
-| Database | SQLite for local development |
-| Web dashboard | React, TypeScript, Vite and Tailwind CSS |
-| Water-level calculations | Distance-to-height, percentage and estimated volume |
-| Tank geometry | Vertical cylindrical and rectangular tanks |
-| Monitoring | Measurement history and dashboard visualizations |
-| Alert logic | Low water, unusual drops, refill-related changes, overflow risk and sensor/status conditions |
-| Software simulation | PHP simulator with eight scenarios |
-| Virtual hardware | ESP32-S3 and HC-SR04 in Wokwi |
-
-These capabilities describe the current prototype. They do not imply that the physical hardware or every future feature has been validated in real-world conditions.
-
-## How it works
-
-AquaSense separates measurement acquisition from water-level calculations. The software simulator supplies distance measurements, while the backend converts these measurements into useful tank information.
+AquaSense separates data collection, measurement processing, persistence, and presentation.
 
 ```mermaid
-flowchart LR
-    SIM["PHP Software Simulator"] --> API["Laravel API"]
-    HW["Future Physical Sensor"] -.-> API
-    API --> VALIDATE["Validate Measurement"]
-    VALIDATE --> CALC["Calculate Water Level"]
-    CALC --> ALERT["Evaluate Monitoring Conditions"]
-    CALC --> DB[("SQLite Database")]
-    ALERT --> DB
-    DB --> UI["React Web Dashboard"]
+flowchart TD
+    A["Software Simulator"] --> B["Laravel API"]
+    C["ESP32-S3 Hardware<br/>(Integration in progress)"] -.-> B
+    B --> D["Measurement Validation"]
+    D --> E["Water-Level Calculations"]
+    E --> F[("SQLite Database")]
+    E --> G["Monitoring Conditions"]
+    G --> F
+    F --> H["React Dashboard"]
 ```
 
-### Measurement processing
+### Data flow
 
-1. A simulator or, in a future validated implementation, a physical device provides a distance measurement in centimetres.
-2. The backend validates and processes the measurement.
-3. Tank geometry and sensor positioning are used to estimate water height, percentage of capacity and volume.
-4. The application stores readings and evaluates monitoring conditions.
-5. The dashboard displays available measurements, history and status information.
+1. The simulator generates distance measurements in centimetres.
+2. The backend receives and validates the incoming telemetry.
+3. Tank geometry and sensor position are used to calculate estimated water height, percentage, and volume.
+4. Measurements are stored and monitoring conditions are evaluated.
+5. The dashboard presents available readings, history, and status information.
 
-The actual water level and volume depend on correct tank dimensions, sensor installation and calibration. Calculated volumes are estimates, not direct measurements of litres.
+Calculated volume depends on accurate tank dimensions and sensor placement. It is an estimate derived from the measured distance, not a direct measurement of water volume.
 
 ## Technology stack
 
-**Backend**
-- PHP 8.3+
-- Laravel
-- SQLite
-- PHPUnit testing
+| Layer | Technologies |
+|---|---|
+| Backend | PHP, Laravel |
+| Database | SQLite for local development |
+| Frontend | React, TypeScript, Vite |
+| Styling | Tailwind CSS |
+| IoT platform | ESP32-S3 |
+| Hardware simulation | Wokwi |
+| Software simulation | PHP |
+| Testing | PHPUnit, TypeScript compiler |
+| Build tools | Composer, Node.js, npm |
 
-**Frontend**
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
+## Project structure
 
-**IoT and simulation**
-- ESP32-S3 development platform
-- Wokwi virtual hardware simulation
-- PHP-based software telemetry simulator
+```text
+aquasense-iot/
+├── backend/                 # API, application logic and tests
+├── frontend/                # Web dashboard
+├── firmware/
+│   └── reference/            # Firmware reference material
+├── simulation/
+│   ├── software/             # Telemetry simulator
+│   └── wokwi/                # Virtual hardware simulation
+├── docs/                     # Technical documentation
+├── THIRD_PARTY_LICENSES/     # Third-party license notices
+├── .gitignore
+├── LICENSE
+└── README.md
+```
 
-**Development tools**
-- Git
-- Composer
-- Node.js and npm
+## Getting started on Windows
 
-## Run locally on Windows
-
-The following instructions use **Windows PowerShell**. They are intended for local development and demonstration, not production deployment.
+These instructions use **Windows PowerShell** and are intended for local development.
 
 ### Prerequisites
 
-Install the following software:
+Install the following:
 
 - [Git for Windows](https://git-scm.com/download/win)
 - [PHP 8.3 or newer](https://windows.php.net/download/)
 - [Composer](https://getcomposer.org/download/)
 - [Node.js](https://nodejs.org/)
 
-Ensure PHP is available in PowerShell and that the required extensions are enabled, including SQLite/PDO SQLite and the standard Laravel dependencies.
+Make sure PHP and Composer are available in your `PATH`, and enable the required PHP extensions, including PDO SQLite and SQLite support.
 
-Verify the installations:
+Verify your installation:
 
 ```powershell
 git --version
@@ -122,12 +110,12 @@ git clone https://github.com/RMXHM/aquasense-iot.git
 Set-Location aquasense-iot
 ```
 
-### 2. Start the backend
+### 2. Configure and start the backend
 
-Open a PowerShell terminal at the repository root:
+Open PowerShell in the repository directory:
 
 ```powershell
-Set-Location backend
+Set-Location .\backend
 
 composer install
 
@@ -135,8 +123,8 @@ if (-not (Test-Path .env)) {
     Copy-Item .env.example .env
 }
 
-if (-not (Test-Path database/database.sqlite)) {
-    New-Item -ItemType File database/database.sqlite | Out-Null
+if (-not (Test-Path database\database.sqlite)) {
+    New-Item -ItemType File database\database.sqlite | Out-Null
 }
 
 php artisan key:generate
@@ -144,28 +132,28 @@ php artisan migrate:fresh --seeder=AquaSenseDemoSeeder
 php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-Leave this terminal running.
+Keep this terminal open while using the application.
 
-The commands above initialize a local environment, create or prepare the SQLite database, and load demo data. The database reset command deletes existing tables, so use it only with a disposable development database.
+**Important:** `migrate:fresh` drops existing database tables before recreating them. Use it only for a fresh or disposable development database.
 
-### 3. Start the dashboard
+### 3. Start the frontend
 
 Open a second PowerShell terminal at the repository root:
 
 ```powershell
-Set-Location frontend
+Set-Location .\frontend
 
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite, normally:
+Open the local address shown by Vite, normally:
 
 **http://localhost:5173**
 
-The dashboard uses the local backend during development. Keep the backend and frontend running while testing the application.
+The backend must also be running for features that require API data.
 
-### 4. Generate simulated measurements
+### 4. Run the simulator
 
 Open a third PowerShell terminal at the repository root:
 
@@ -173,100 +161,115 @@ Open a third PowerShell terminal at the repository root:
 php .\simulation\software\simulate.php --list
 ```
 
-The simulator currently supports these scenarios:
+The available scenarios are:
 
-- `normal`
-- `consumption`
-- `refill`
-- `low_water`
-- `sudden_drop`
-- `overflow_risk`
-- `sensor_error`
-- `offline`
+| Scenario | Purpose |
+|---|---|
+| `normal` | Normal water-level readings |
+| `consumption` | Gradual water-level decrease |
+| `refill` | Increasing water level |
+| `low_water` | Low-water condition |
+| `sudden_drop` | Abrupt level decrease |
+| `overflow_risk` | Potential overflow condition |
+| `sensor_error` | Simulated sensor error |
+| `offline` | Simulated device disconnection |
 
-For example, to simulate water consumption and send readings every five seconds:
+For example, generate consumption readings every five seconds:
 
 ```powershell
 php .\simulation\software\simulate.php --tank=1 --scenario=consumption --interval=5
 ```
 
-Keep the simulator running to generate new telemetry. Its output reports measurement submission results. Successful submission to the local API confirms the software path is working; it does not demonstrate that a physical sensor or ESP32 has transmitted the same data.
+The simulator sends measurements to the local API. Successful HTTP responses verify that the software telemetry path is operating; they do not confirm that a physical device can communicate with the server.
 
-## Testing and building
+## Development and testing
 
-Run the backend tests from the `backend` directory:
+### Backend tests
+
+From the `backend` directory:
 
 ```powershell
 php artisan test
 ```
 
-Check and build the frontend from the `frontend` directory:
+### Frontend type checking
+
+From the `frontend` directory:
 
 ```powershell
-npm run typecheck
+npx tsc --noEmit
+```
+
+### Production frontend build
+
+```powershell
 npm run build
 ```
 
-These commands help verify the application code and frontend build. They do not replace real-hardware testing, security testing or deployment checks.
+These checks validate application code and build output. Physical sensor validation, network testing, and production security checks must be performed separately.
 
-## Project structure
+## Current development status
 
-```text
-aquasense-iot/
-├── backend/                 # Laravel API, domain logic and tests
-├── frontend/                # React dashboard
-├── simulation/
-│   ├── software/            # PHP telemetry simulator
-│   └── wokwi/               # Virtual ESP32-S3 circuit and firmware
-├── firmware/
-│   └── reference/           # Retained firmware reference material
-├── docs/                    # Technical documentation
-├── THIRD_PARTY_LICENSES/    # Third-party license notices
-├── .gitignore
-├── LICENSE
-└── README.md
-```
-
-## Current limitations
-
-AquaSense is still under development. The following limitations are important:
-
-- **Simulated measurements:** The current dashboard data is not proof of real-world water levels.
-- **Hardware validation:** No physical sensor has been validated for measurement accuracy, installation conditions or waterproofing.
-- **Sensor selection:** The HC-SR04 is currently a virtual demonstration component. The final physical sensor has not been selected and validated.
-- **Device connectivity:** Real ESP32-S3-to-server telemetry over Wi-Fi has not yet been demonstrated end to end.
-- **Security:** Production-ready user authentication, device ownership, secure activation, telemetry protection and rate limiting remain unfinished.
-- **Deployment:** Remote monitoring requires a properly deployed and secured backend; the local development setup is not a hosted service.
-- **Safety:** The prototype must not be used as the sole protection against tank overflow, pump damage or other hazards.
-
-Do not expose the development server publicly or use demonstration credentials in a real installation.
+| Area | Status |
+|---|---|
+| Laravel API | Implemented and locally testable |
+| SQLite persistence | Available for local development |
+| React dashboard | Implemented prototype |
+| PHP telemetry simulator | Available |
+| Automated backend tests | Available |
+| Frontend type checking and build | Available |
+| Physical sensor calibration | Not validated |
+| ESP32-S3 telemetry over Wi-Fi | End-to-end validation pending |
+| Production authentication and device security | Incomplete |
+| Production deployment | Not yet established |
 
 ## Roadmap
 
-The next stages of development are:
+### Hardware integration
+- Select a cost-effective water-level sensor appropriate for the target tank.
+- Integrate the selected sensor with the ESP32-S3.
+- Calibrate readings against manual measurements.
+- Verify reliable Wi-Fi telemetry and device recovery after disconnection.
 
-1. Select an appropriate physical water-level sensor based on cost, range, environmental conditions and reliability.
-2. Validate the sensor with the target ESP32-S3 hardware and compare its readings with manual measurements.
-3. Verify reliable device-to-server communication over Wi-Fi.
-4. Improve device provisioning, authentication and telemetry security.
-5. Validate alerts and measurement recovery under realistic operating conditions.
-6. Prepare a documented deployment setup for remote monitoring.
-7. Explore additional capabilities such as flow monitoring, leak detection and optional pump control with independent safety mechanisms.
+### Monitoring improvements
+- Refine low-water thresholds and unusual-consumption detection.
+- Improve measurement validation and sensor fault handling.
+- Extend monitoring history and per-tank configuration where needed.
+
+### Security and deployment
+- Implement user authentication and device ownership.
+- Improve device provisioning and activation security.
+- Add telemetry rate limiting and replay protection.
+- Configure HTTPS and secure production deployment.
+- Validate operational reliability before real-world use.
+
+### Future possibilities
+- Leak detection using water-level trends and, where appropriate, flow measurements.
+- Notifications for configurable monitoring conditions.
+- Optional pump automation with independent hardware safety protection.
+
+## Security and safety
+
+AquaSense is a development prototype. Do not expose its development server directly to the public internet or use demonstration credentials in a real installation.
+
+The current system must not be the sole protection against tank overflow, pump damage, or other safety-critical events. Any future pump control must include appropriate electrical protection and independent safety mechanisms.
 
 ## Documentation
 
-Technical details and implementation notes are maintained in the [`docs/`](docs/) directory.
+Implementation details are maintained in the [`docs/`](docs/) directory.
 
-Start with the relevant document for architecture, API behaviour, simulation, calibration, hardware decisions or project provenance. Documentation should be treated as implementation-specific: features described as planned are not necessarily available in the current version.
+- [`API.md`](docs/API.md) — API endpoints and telemetry behaviour
+- [`SIMULATION.md`](docs/SIMULATION.md) — software simulator and test scenarios
+- [`HARDWARE_DECISION.md`](docs/HARDWARE_DECISION.md) — sensor evaluation and hardware direction
 
-## Project origin and licensing
+Consult the documentation for the current implementation before integrating new hardware or extending the API.
 
-AquaSense originated from a fork and adaptation of [hladinomer-studna-scripty (Watmonitor)](https://github.com/martinius96/hladinomer-studna-scripty) by Martin Chlebovec.
+## License
 
-The project has since been developed around AquaSense's own monitoring workflow, backend, dashboard and simulation. Original license and copyright notices for retained upstream material are preserved. Third-party components and their applicable licenses are identified in [`THIRD_PARTY_LICENSES/`](THIRD_PARTY_LICENSES/) and the relevant reference files.
+AquaSense is distributed under the terms stated in [`LICENSE`](LICENSE). Third-party dependencies and retained components may be subject to their own license terms; applicable notices are maintained in [`THIRD_PARTY_LICENSES/`](THIRD_PARTY_LICENSES/).
 
-See [`LICENSE`](LICENSE) and the documentation for the applicable terms and provenance details.
+Review the relevant license files before redistributing the project or its components.
 
 ---
 
-**AquaSense — making water-level monitoring more accessible through open-source software and affordable IoT hardware.**
+**AquaSense — turning water-level measurements into actionable information.**
